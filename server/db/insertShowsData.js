@@ -2,6 +2,8 @@ const MongoClient = require('mongodb').MongoClient;
 const csvtojson = require('csvtojson');
 const csvFilePath = './../shows.csv';
 
+// Preforms the initial populating of the DB with the csv data
+
 // Connects to the mongodb server
 MongoClient.connect('mongodb://localhost:27017/PickATicket',
   { useNewUrlParser: true },
@@ -17,7 +19,7 @@ MongoClient.connect('mongodb://localhost:27017/PickATicket',
       .fromFile(csvFilePath)
       .then(jsonObj => {
         const collection = client.db('PickATicket').collection('Shows');
-        
+
         collection.insertMany(jsonObj, (err, r) => {
           if (err) {
             console.log('Unable to insert data into database', err);
