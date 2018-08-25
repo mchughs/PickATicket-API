@@ -17,6 +17,6 @@ const Schema = new mongoose.Schema({
   },
 }).plugin(uniqueValidator);
 
-const Show = mongoose.model('Show', Schema, 'Shows');
+const InventoryItem = mongoose.model('InventoryItem', Schema, 'InventoryItems');
 
-module.exports = {Show};
+module.exports = {InventoryItem};
