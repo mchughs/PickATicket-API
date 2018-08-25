@@ -7,6 +7,10 @@ const {Show} = require('./models/show');
 const app = express();
 const port = process.env.PORT || 3000;
 
+// Sets up a function to run between client and server processes
+// Tells express to use JSON
+app.use(bodyParser.json());
+
 app.get('/shows', (req, res) => {
   // Returns all shows
   Show.find().then(shows => {
