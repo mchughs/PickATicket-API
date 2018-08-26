@@ -5,10 +5,31 @@ const {app} = require('./../server');
 const {Show} = require('./../models/show');
 const {InventoryItem} = require('./../models/inventoryitem');
 
-// Initialize the shows database and the inventory database as empty
+const inventory = [{
+  title: "CATS",
+  startDate: "2017-06-01",
+  genre: "MUSICAL",
+},{
+  title: "COMEDY OF ERRORS",
+  startDate: "2017-07-01",
+  genre: "COMEDY"
+},{
+  title: "EVERYMAN",
+  startDate: "2017-08-01",
+  genre: "DRAMA"
+},{
+  title: "BATMAN",
+  startDate: "2017-09-01",
+  genre: "DRAMA"
+}]
+
+// Initialize the shows database as empty
+// Initializes the inventory database with 4 entries
 beforeEach((done) => {
   Show.remove({}).then(() => {
-    InventoryItem.remove({}).then(() => done());
+    InventoryItem.remove({}).then(() => {
+      return InventoryItem.insertMany(inventory);
+    }).then(() => done());
   });
 });
 
@@ -75,8 +96,8 @@ describe('POST /inventory', () => {
         if (err) {
           return done(err);
         }
-        // Should be the only show in the inventory
-        InventoryItem.find().then((shows) => {
+        // Should be the only show in the inventory with the title '1984'
+        InventoryItem.find({title}).then((shows) => {
           expect(shows.length).toBe(1);
           expect(shows[0].title).toBe(title);
           expect(shows[0].startDate).toBe(startDate);
@@ -109,8 +130,8 @@ describe('POST /inventory', () => {
             if (err) {
               return done(err);
             }
-            // Should still be only one show in the inventory
-            InventoryItem.find().then((shows) => {
+            // Should be only show in the inventory with the title '1984'
+            InventoryItem.find({title}).then((shows) => {
               expect(shows.length).toBe(1);
               expect(shows[0].title).toBe(title);
               expect(shows[0].startDate).toBe(startDate);
@@ -119,5 +140,63 @@ describe('POST /inventory', () => {
             }).catch((err) => done(err));
           });
       });
+  });
+});
+
+describe('GET /inventory', () => {
+  it('should get all shows from the inventory', (done) => {
+    request(app)
+      .get('/inventory')
+      .expect(200)
+      .expect((res) => expect(res.body.shows.length).toBe(4))
+      .end(done);
+  });
+
+  it('should get return 2 genres', (done) => {
+    request(app)
+      .get('/inventory?queryDate=2017-01-01&showDate=2017-07-01')
+      .expect(200)
+      .expect((res) => expect(res.body.inventory.length).toBe(2))
+      .end(done);
+  });
+
+  it('should get return 3 genres', (done) => {
+    request(app)
+      .get('/inventory?queryDate=2017-01-01&showDate=2017-08-01')
+      .expect(200)
+      .expect((res) => expect(res.body.inventory.length).toBe(3))
+      .end(done);
+  });
+
+  it('should have status "Sale not started"', (done) => {
+    request(app)
+      .get('/inventory?queryDate=2017-01-01&showDate=2017-08-01')
+      .expect(200)
+      .expect((res) => expect(res.body.inventory[0].shows[0].status).toBe("Sale not started"))
+      .end(done);
+  });
+
+  it('should have status "Open for sale"', (done) => {
+    request(app)
+      .get('/inventory?queryDate=2017-08-01&showDate=2017-08-15')
+      .expect(200)
+      .expect((res) => expect(res.body.inventory[0].shows[0].status).toBe("Open for sale"))
+      .end(done);
+  });
+
+  it('should have status "In the past"', (done) => {
+    request(app)
+      .get('/inventory?queryDate=2017-08-02&showDate=2017-08-01')
+      .expect(200)
+      .expect((res) => expect(res.body.inventory[0].shows[0].status).toBe("In the past"))
+      .end(done);
+  });
+
+  it('should have status "Sold out"', (done) => {
+    request(app)
+      .get('/inventory?queryDate=2017-08-01&showDate=2017-08-05')
+      .expect(200)
+      .expect((res) => expect(res.body.inventory[0].shows[0].status).toBe("Sold out"))
+      .end(done);
   });
 });

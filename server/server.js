@@ -6,6 +6,7 @@ const csvFilePath = './shows.csv';
 const {mongoose} = require('./db/mongoose');
 const {Show} = require('./models/show');
 const {InventoryItem} = require('./models/inventoryitem');
+const {queryTicketInfo} = require('./queryinfo');
 
 const app = express();
 const port = process.env.PORT || 3000;
@@ -43,10 +44,48 @@ app.post('/allshows', (req, res) => {
   Inserting and getting the show data into the Inventory
 ***************************************************************/
 
+// Fetch the appropriate information if given query params
+// or
 // Fetch all shows in inventory
 app.get('/inventory', (req, res) => {
+  // A query for the URL should look like the following example
+  // Ex: /inventory?queryDate=2018-01-01&showDate=2018-01-07
+  const queryDate = req.query.queryDate;
+  const showDate = req.query.showDate;
+
+  const genres = ["MUSICAL", "COMEDY", "DRAMA"];
+
   InventoryItem.find().then(shows => {
-    res.send({shows});
+    if (queryDate && showDate) {
+      const inventory = genres
+        .map(genre => {
+          const showInfo = shows
+            .filter(show => show.genre === genre)
+            .map(show => {
+              const {tickets_left, tickets_available, status} =
+                queryTicketInfo(queryDate, showDate, show.startDate);
+
+              return {
+                title: show.title,
+                tickets_left,
+                tickets_available,
+                status
+              }
+            })
+            .filter(show => show.status !== 'Error Flag');
+            
+          return {
+            genre,
+            shows: showInfo
+          }
+        })
+        .filter(genre => genre.shows.length !== 0);
+
+      res.send({inventory});
+    } else {
+      // If both query params are not provided then fetch all the shows
+      res.send({shows});
+    }
   }, (err) => {
     res.status(400).send(err);
   });
