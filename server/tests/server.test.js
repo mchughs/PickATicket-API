@@ -33,6 +33,20 @@ beforeEach((done) => {
   });
 });
 
+afterEach((done) => {
+  // always reset the inventory to the full show list
+  InventoryItem.remove({}).then(() => {
+    request(app)
+      .post('/inventory')
+      .end((err, res) => {
+        if (err) {
+          return done(err);
+        }
+        done();
+      });
+  });
+});
+
 describe('POST /allshows', () => {
   it('should add all shows to the inventory', (done) => {
     request(app)

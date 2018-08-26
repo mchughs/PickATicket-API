@@ -61,7 +61,7 @@ const getShowInfo = function (shows, genre, queryDate, showDate) {
     .map(show => {
       const {tickets_left, tickets_available, status} =
         getTicketStatus(queryDate, showDate, show.startDate);
-
+        
       return {
         title: show.title,
         tickets_left,

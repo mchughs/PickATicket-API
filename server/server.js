@@ -77,19 +77,33 @@ app.get('/inventory', (req, res) => {
   });
 });
 
-// Will post one show into the inventory
+// Will post one show into the inventory or all shows if no body is passed
 app.post('/inventory', (req, res) => {
-  const show = new InventoryItem({
-    title: req.body.title,
-    startDate: req.body.startDate,
-    genre: req.body.genre,
-  });
+  // If no body is passed
+  if (Object.keys(req.body).length === 0) {
+    csvtojson({noheader: true, headers:['title', 'startDate', 'genre']})
+    .fromFile(csvFilePath)
+    .then(shows => {
+      InventoryItem.insertMany(shows).then((doc) => {
+        res.send(doc);
+      }, (err) => {
+        res.status(400).send(err);
+      });
+    });
+  // Else pass just the provided body
+  } else {
+    const show = new InventoryItem({
+      title: req.body.title,
+      startDate: req.body.startDate,
+      genre: req.body.genre,
+    });
 
-  show.save().then((doc) => {
-    res.send(doc);
-  }, (err) => {
-    res.status(400).send(err);
-  });
+    show.save().then((doc) => {
+      res.send(doc);
+    }, (err) => {
+      res.status(400).send(err);
+    });
+  }
 });
 
 app.listen(port, () => {
