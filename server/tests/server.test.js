@@ -168,35 +168,51 @@ describe('GET /inventory', () => {
       .end(done);
   });
 
-  it('should have status "Sale not started"', (done) => {
+  it('should have status "Sale not started", tickets_left 100, tickets_available 0', (done) => {
     request(app)
       .get('/inventory?queryDate=2017-01-01&showDate=2017-08-01')
       .expect(200)
-      .expect((res) => expect(res.body.inventory[0].shows[0].status).toBe("Sale not started"))
+      .expect((res) => {
+        expect(res.body.inventory[0].shows[0].status).toBe("Sale not started")
+        expect(res.body.inventory[0].shows[0].tickets_left).toBe(100)
+        expect(res.body.inventory[0].shows[0].tickets_available).toBe(0)
+      })
       .end(done);
   });
 
-  it('should have status "Open for sale"', (done) => {
+  it('should have status "Open for sale", tickets_left 45, tickets_available 5', (done) => {
     request(app)
       .get('/inventory?queryDate=2017-08-01&showDate=2017-08-15')
       .expect(200)
-      .expect((res) => expect(res.body.inventory[0].shows[0].status).toBe("Open for sale"))
+      .expect((res) => {
+        expect(res.body.inventory[0].shows[0].status).toBe("Open for sale")
+        expect(res.body.inventory[0].shows[0].tickets_left).toBe(45)
+        expect(res.body.inventory[0].shows[0].tickets_available).toBe(5)
+      })
       .end(done);
   });
 
-  it('should have status "In the past"', (done) => {
+  it('should have status "In the past", tickets_left 0, tickets_available 0', (done) => {
     request(app)
-      .get('/inventory?queryDate=2017-08-02&showDate=2017-08-01')
+      .get('/inventory?queryDate=2018-01-01&showDate=2018-08-01')
       .expect(200)
-      .expect((res) => expect(res.body.inventory[0].shows[0].status).toBe("In the past"))
+      .expect((res) => {
+        expect(res.body.inventory[0].shows[0].status).toBe("In the past")
+        expect(res.body.inventory[0].shows[0].tickets_left).toBe(0)
+        expect(res.body.inventory[0].shows[0].tickets_available).toBe(0)
+      })
       .end(done);
   });
 
-  it('should have status "Sold out"', (done) => {
+  it('should have status "Sold out", tickets_left 0, tickets_available 0', (done) => {
     request(app)
       .get('/inventory?queryDate=2017-08-01&showDate=2017-08-05')
       .expect(200)
-      .expect((res) => expect(res.body.inventory[0].shows[0].status).toBe("Sold out"))
+      .expect((res) => {
+        expect(res.body.inventory[0].shows[0].status).toBe("Sold out")
+        expect(res.body.inventory[0].shows[0].tickets_left).toBe(0)
+        expect(res.body.inventory[0].shows[0].tickets_available).toBe(0)
+      })
       .end(done);
   });
 });

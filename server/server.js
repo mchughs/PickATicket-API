@@ -6,7 +6,7 @@ const csvFilePath = './shows.csv';
 const {mongoose} = require('./db/mongoose');
 const {Show} = require('./models/show');
 const {InventoryItem} = require('./models/inventoryitem');
-const {queryTicketInfo} = require('./queryinfo');
+const {getShowInfo} = require('./helpers');
 
 const app = express();
 const port = process.env.PORT || 3000;
@@ -59,21 +59,7 @@ app.get('/inventory', (req, res) => {
     if (queryDate && showDate) {
       const inventory = genres
         .map(genre => {
-          const showInfo = shows
-            .filter(show => show.genre === genre)
-            .map(show => {
-              const {tickets_left, tickets_available, status} =
-                queryTicketInfo(queryDate, showDate, show.startDate);
-
-              return {
-                title: show.title,
-                tickets_left,
-                tickets_available,
-                status
-              }
-            })
-            .filter(show => show.status !== 'Error Flag');
-            
+          const showInfo = getShowInfo(shows, genre, queryDate, showDate);
           return {
             genre,
             shows: showInfo
