@@ -4,7 +4,6 @@ const csvtojson = require('csvtojson');
 const csvFilePath = './shows.csv';
 
 const {mongoose} = require('./db/mongoose');
-const {Show} = require('./models/show');
 const {InventoryItem} = require('./models/inventoryitem');
 const {getShowInfo} = require('./helpers');
 
@@ -15,38 +14,10 @@ const port = process.env.PORT || 3000;
 app.use(bodyParser.json());
 
 /**************************************************************
-  Inserting and getting the CSV data into the database as JSON
-***************************************************************/
-
-// Fetches all shows
-app.get('/allshows', (req, res) => {
-  Show.find().then(shows => {
-    res.send({shows});
-  }, (err) => {
-    res.status(400).send(err);
-  });
-});
-
-// Will post all the shows into the database
-app.post('/allshows', (req, res) => {
-  csvtojson({noheader: true, headers:['title', 'startDate', 'genre']})
-  .fromFile(csvFilePath)
-  .then(shows => {
-    Show.insertMany(shows).then((doc) => {
-      res.send(doc);
-    }, (err) => {
-      res.status(400).send(err);
-    });
-  });
-});
-
-/**************************************************************
   Inserting and getting the show data into the Inventory
 ***************************************************************/
 
-// Fetch the appropriate information if given query params
-// or
-// Fetch all shows in inventory
+// Fetch the appropriate information
 app.get('/inventory', (req, res) => {
   // A query for the URL should look like the following example
   // Ex: /inventory?queryDate=2018-01-01&showDate=2018-01-07
@@ -56,6 +27,7 @@ app.get('/inventory', (req, res) => {
   const genres = ["MUSICAL", "COMEDY", "DRAMA"];
 
   InventoryItem.find().then(shows => {
+    // If query params passed return the ticket information
     if (queryDate && showDate) {
       const inventory = genres
         .map(genre => {
@@ -66,10 +38,10 @@ app.get('/inventory', (req, res) => {
           }
         })
         .filter(genre => genre.shows.length !== 0);
-
       res.send({inventory});
+
+    // else fetch all the shows
     } else {
-      // If both query params are not provided then fetch all the shows
       res.send({shows});
     }
   }, (err) => {
@@ -77,7 +49,6 @@ app.get('/inventory', (req, res) => {
   });
 });
 
-// Will post one show into the inventory or all shows if no body is passed
 app.post('/inventory', (req, res) => {
   // If no body is passed
   if (Object.keys(req.body).length === 0) {
