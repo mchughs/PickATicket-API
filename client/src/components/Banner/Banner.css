@@ -1,0 +1,14 @@
+.Banner {
+  overflow: hidden;
+  padding: 10px;
+  border-radius: 4px;
+  width: 100%;
+  background-color: #ffee59;
+  text-align: center;
+  justify-content: center;
+}
+
+text {
+  color: #ff007e;
+  font-size: 40px;
+}

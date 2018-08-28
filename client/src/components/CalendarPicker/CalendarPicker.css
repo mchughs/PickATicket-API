@@ -1,0 +1,10 @@
+.CalendarPicker {
+  margin: 50px 60px;
+  display: flex;
+  flex-direction: row;
+}
+
+text {
+  font-size: 20px;
+  padding: 0px 30px;
+}

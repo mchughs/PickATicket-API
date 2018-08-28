@@ -1,0 +1,17 @@
+.Table {
+  margin-bottom: 30px;
+}
+
+table {
+  border:solid #47a4e8 2px;
+}
+
+tr {
+  border:solid #47a4e8 2px;
+  background-color: #97c9ed;
+}
+
+th {
+  border:solid #47a4e8 2px;
+  padding: 5px 10px;
+}
