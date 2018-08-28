@@ -55,6 +55,10 @@
     "build": "node scripts/build.js",
     "test": "node scripts/test.js --env=jsdom"
   },
+  "engines": {
+    "npm": "6.2.0",
+    "node": "10.1.0"
+  },
   "proxy": "https://pick-a-ticket.herokuapp.com/",
   "jest": {
     "collectCoverageFrom": [
