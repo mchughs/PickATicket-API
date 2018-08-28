@@ -13,6 +13,9 @@ const port = process.env.PORT || 3000;
 // Tells express to use JSON
 app.use(bodyParser.json());
 
+// Serve static files from the React app
+app.use(express.static(path.join(__dirname, 'client/build')));
+
 /**************************************************************
   Inserting and getting the show data into the Inventory
 ***************************************************************/
