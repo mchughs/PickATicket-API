@@ -2,6 +2,7 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const csvtojson = require('csvtojson');
 const csvFilePath = './shows.csv';
+const path = require('path');
 
 const {mongoose} = require('./db/mongoose');
 const {InventoryItem} = require('./models/inventoryitem');
