@@ -18,7 +18,7 @@ app.use(bodyParser.json());
 app.use(function (req, res, next) {
 
     // Website allowed to connect
-    res.setHeader('Access-Control-Allow-Origin', 'https://tickets-4-sale.herokuapp.com/');
+    res.setHeader('Access-Control-Allow-Origin', 'https://tickets-4-sale.herokuapp.com');
 
     // Request methods allowed
     res.setHeader('Access-Control-Allow-Methods', 'GET');
