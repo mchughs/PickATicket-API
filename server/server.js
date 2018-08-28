@@ -2,7 +2,6 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const csvtojson = require('csvtojson');
 const csvFilePath = './shows.csv';
-const path = require('path');
 
 const {mongoose} = require('./db/mongoose');
 const {InventoryItem} = require('./models/inventoryitem');
@@ -15,7 +14,18 @@ const port = process.env.PORT || 3000;
 app.use(bodyParser.json());
 
 // Serve static files from the React app
-app.use(express.static(path.join(__dirname, 'client/build')));
+// Add headers
+app.use(function (req, res, next) {
+
+    // Website allowed to connect
+    res.setHeader('Access-Control-Allow-Origin', 'https://tickets-4-sale.herokuapp.com/');
+
+    // Request methods allowed
+    res.setHeader('Access-Control-Allow-Methods', 'GET');
+
+    // Pass to next layer of middleware
+    next();
+});
 
 /**************************************************************
   Inserting and getting the show data into the Inventory
