@@ -16,9 +16,10 @@ app.use(bodyParser.json());
 // Serve static files from the React app
 // Add headers
 app.use(function (req, res, next) {
+    const origin = req.headers.origin;
 
-    // Website allowed to connect
-    res.setHeader('Access-Control-Allow-Origin', 'https://tickets-4-sale.herokuapp.com');
+    // Allow any website to connect
+    res.setHeader('Access-Control-Allow-Origin', origin);
 
     // Request methods allowed
     res.setHeader('Access-Control-Allow-Methods', 'GET');
